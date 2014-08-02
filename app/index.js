@@ -171,7 +171,16 @@ var AngularFullstackGenerator = yeoman.generators.Base.extend({
         return answers.mongoose;
       },
       default: true
+    }, {
+      type: "confirm",
+      name: "mail",
+      message: "Would you like to use node-mailer?",
+      when: function (answers) {
+        return answers.mongoose;
+      },
+      default: true
     }], function (answers) {
+      if(answers.mail) this.filters.mail = true;
       if(answers.socketio) this.filters.socketio = true;
       if(answers.mongoose) this.filters.mongoose = true;
       if(answers.auth) this.filters.auth = true;

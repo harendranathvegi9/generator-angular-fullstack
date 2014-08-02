@@ -40,6 +40,21 @@ var all = {
       }
     }
   },
+<% if(filters.mail) { %>
+
+// Mail service configurations  
+  mail: { //transport: process.env.MAIL_TRANSPORT_METHOD || 'mail_transport',
+          service: process.env.MAIL_SERVICE || 'mail_service', 
+          auth: {
+              user: process.env.MAIL_USER || 'mail_user',
+              pass: process.env.MAIL_PASS || 'mail_pass'
+          },
+          from : {
+            name : process.env.MAIL_FROM_NAME || 'mail_from_name',
+            address : process.env.MAIL_FROM_ADDRESS || 'mail_from_address'
+          }
+  },
+<% } %>  
 <% if(filters.facebookAuth) { %>
   facebook: {
     clientID:     process.env.FACEBOOK_ID || 'id',

@@ -1,0 +1,47 @@
+div(ng-include='"components/navbar/navbar.html"')
+.container(ng-show='resetStateIs("mailform")')
+  .row
+    .col-sm-12
+      h1 Password forgotten?
+      p Submit your email address 
+    .col-sm-12
+      form.form(name='resetform', ng-submit='sendPwdResetMail(resetform)', novalidate='')
+        .form-group
+          label Email address
+          input.form-control(type='email', name='email', ng-model='reset.email', required='', mongoose-error='')
+        .form-group.has-error
+          p.help-block(ng-show='resetform.email.$error.email && submitted')
+            | Doesn't look like a valid email.
+          p.help-block(ng-show='resetform.email.$error.required && submitted')
+            | Please enter your email confirmation code.
+          p.help-block {{ errors.other }}
+        .help-block(ng-show='unknownMailAddress')
+          p The email address you entered is not known.
+          p check the address and send it again.
+        .col-sm-6
+          button.btn.btn-inverse.btn-lg.btn-primary(ng-disabled='pwdResetMailSend', type='submit')
+            | Submit email address
+  hr
+.container(ng-show='resetStateIs("mailsent")')
+  .alert.alert-success(role='alert')
+    h1 Almost there
+    p
+      | A mail with some instructions to reset your password was sent to
+      b {{reset.email}}
+      | .
+    p Check your inbox.
+.container(ng-show='resetStateIs("passwordform")')
+  h1 Change your password
+  .col-sm-12
+    form.form(name='form', ng-submit='changeResetedPassword(form)', novalidate='')
+      .form-group
+        label New Password
+        input.form-control(type='password', name='newPassword', ng-model='user.newPassword', ng-minlength='3', required='')
+        p.help-block(ng-show='(form.newPassword.$error.minlength || form.newPassword.$error.required) && (form.newPassword.$dirty || submitted)')
+          | Password must be at least 3 characters.
+      .help-block(ng-show='invalidResetCode')
+        p Your password reset code may be invalid.
+        p
+          | Check the instructions in your inbox or request another reset code
+          a(href='/pwdreset') here
+      button.btn.btn-lg.btn-primary(type='submit') Save changes

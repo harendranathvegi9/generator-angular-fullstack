@@ -3,7 +3,30 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var crypto = require('crypto');<% if(filters.oauth) { %>
-var authTypes = ['github', 'twitter', 'facebook', 'google'];<% } %>
+var authTypes = ['github', 'twitter', 'facebook', 'google'];<% } %><% if(filters.mail) { %>
+var bases = require('bases');
+
+var reliableProvider = ['github', 'facebook', 'google'];
+
+function randomStr(length) {
+    var maxNum = Math.pow(62, length);
+    var numBytes = Math.ceil(Math.log(maxNum) / Math.log(256));
+
+    if (numBytes === Infinity) {
+        throw new Error('Length too large; caused overflow: ' + length);
+    }
+ 
+    do {
+        var bytes = crypto.randomBytes(numBytes);
+        var num = 0
+        for (var i = 0; i < bytes.length; i++) {
+            num += Math.pow(256, i) * bytes[i];
+        }
+    } while (num >= maxNum);
+ 
+    return bases.toBase62(num);
+};
+<% } %>
 
 var UserSchema = new Schema({
   name: String,
@@ -11,7 +34,11 @@ var UserSchema = new Schema({
   role: {
     type: String,
     default: 'user'
-  },
+  },<% if(filters.mail) { %>
+  confirmedMail : { type: Boolean, default: false },
+  mailConfirmationCode : {type: String},
+  passwordResetCode : {type: String, default: ''},
+  <% } %>
   hashedPassword: String,
   provider: String,
   salt: String<% if (filters.oauth) { %>,<% if (filters.facebookAuth) { %>
@@ -51,7 +78,8 @@ UserSchema
   .get(function() {
     return {
       '_id': this._id,
-      'role': this.role
+      'role': this.role<% if(filters.mail) { %>,
+      'confirmedMail' : this.confirmedMail<% } %>
     };
   });
 
@@ -101,6 +129,13 @@ UserSchema
   .pre('save', function(next) {
     if (!this.isNew) return next();
 
+    <% if(filters.mail) { %>
+    if (reliableProvider.indexOf(this.provider) !== -1) 
+      this.confirmedMail = true;
+    else 
+      this.mailConfirmationCode = randomStr(16);
+    <% } %>
+
     if (!validatePresenceOf(this.hashedPassword)<% if (filters.oauth) { %> && authTypes.indexOf(this.provider) === -1<% } %>)
       next(new Error('Invalid password'));
     else
@@ -143,7 +178,19 @@ UserSchema.methods = {
     if (!password || !this.salt) return '';
     var salt = new Buffer(this.salt, 'base64');
     return crypto.pbkdf2Sync(password, salt, 10000, 64).toString('base64');
-  }
+  }<% if(filters.mail) { %>,
+
+  /**
+   * Set random password reset code
+   *
+   * @param {Function} callback
+   */
+  setPwResetCode: function(callback) {
+    var user = this;
+    user.passwordResetCode = randomStr(16);
+    user.save(callback);
+  }<% } %>
+
 };
 
 module.exports = mongoose.model('User', UserSchema);

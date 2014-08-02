@@ -1,0 +1,22 @@
+div(ng-include='"components/navbar/navbar.html"')
+.container
+  .row
+    .col-sm-12
+      h1 Email confirmation
+      p Submit your confimation code to confirm your email address 
+    .col-sm-12
+      form.form(name='form', ng-submit='confirm(form)', novalidate='novalidate')
+        .form-group
+          label Confirmation code
+          input.form-control(type='text', name='confirmCode', ng-model='confirm.code')
+        .form-group.has-error
+          p.help-block(ng-show='form.confirmCode.$error.required && submitted')
+            | Please enter your email confirmation code.
+          p.help-block {{ errors.other }}
+        .col-sm-6
+          button.btn.btn-inverse.btn-lg.btn-primary(type='submit')
+            | Confirm email
+        .col-sm-6
+          br
+          a(href='', ng-click='sendConfirmationMail()', ng-show='isLoggedIn()', ng-hide='confirmationMailSend()') Send new mail activation code.
+  hr

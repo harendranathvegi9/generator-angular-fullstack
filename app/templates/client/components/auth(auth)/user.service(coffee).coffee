@@ -14,4 +14,20 @@ angular.module '<%= scriptAppName %>'
       method: 'GET'
       params:
         id: 'me'
+<% if(filters.mail) { %>
+    sendConfirmationMail:
+      method: 'GET'
+      params:
+        id:'sendConfirmMail'
 
+
+    sendPwdResetMail: 
+      method: 'POST'
+      params:
+        controller:'sendPwdResetMail'
+
+    changeResetedPassword:
+        method: 'POST',
+        params:
+          controller:'changeResetedPassword'
+<% }%>

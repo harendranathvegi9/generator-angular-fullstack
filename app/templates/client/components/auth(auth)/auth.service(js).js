@@ -141,6 +141,106 @@ angular.module('<%= scriptAppName %>')
        */
       getToken: function() {
         return $cookieStore.get('token');
-      }
+      }<% if(filters.mail) { %>,
+
+      /**
+       * Confirm mail
+       *
+       * @param  {String}   mailConfirmationCode
+       * @param  {Function} callback    - optional
+       * @return {Promise}
+       */
+      confirmMail: function(mailConfirmationCode, callback) {
+        var cb = callback || angular.noop;
+        var deferred = $q.defer();
+
+        $http.post('/api/users/confirm', {
+          mailConfirmationCode: mailConfirmationCode
+        }).
+        success(function(data) {
+          $cookieStore.put('token', data.token);
+          currentUser = User.get();
+          deferred.resolve(data);
+          return cb();
+        }).
+        error(function(err) {
+          deferred.reject(err);
+          return cb(err);
+        }.bind(this));
+
+        return deferred.promise;
+      },
+
+      /**
+       * Check if a user's mail is confirmed
+       *
+       * @return {Boolean}
+       */
+      isMailconfirmed: function() {
+        console.log('Current user: ');
+        console.log(currentUser);
+        return currentUser.confirmedMail;
+      },
+
+      /**
+       * Confirm mail
+       *
+       * @param  {Function} callback    - optional
+       * @return {Promise}
+       */
+      sendConfirmationMail: function(callback) {
+        var cb = callback || angular.noop;
+
+        return User.sendConfirmationMail(function(user) {
+          return cb(user);
+        }, function(err) {
+          return cb(err);
+        }).$promise;
+      },
+
+      /**
+       * Send Reset password Mail
+       *
+       * @param  {String}   email address
+       * @param  {Function} callback    - optional
+       * @return {Promise}
+       */
+      sendPwdResetMail: function(email, callback) {
+        var cb = callback || angular.noop;
+        console.log('email :'+email);
+        return User.sendPwdResetMail({
+          email: email
+        }, function(user) {
+          return cb(user);
+        }, function(err) {
+          return cb(err);
+        }).$promise;
+      },
+
+      /**
+       * Change reseted password
+       *
+       * @param  {String}   pwdresetCode
+       * @param  {String}   newPassword
+       * @param  {Function} callback    - optional
+       * @return {Promise}
+       */
+      changeResetedPassword: function(pwdresetCode, newPassword, callback) {
+        var cb = callback || angular.noop;
+        console.log('pwdresetCode: '+ pwdresetCode);
+
+        return User.changeResetedPassword({
+          passwordResetCode: pwdresetCode,
+          newPassword: newPassword
+        }, function(data) {
+          console.log('data: ');
+          console.log(data);
+          $cookieStore.put('token', data.token);
+          currentUser = User.get();
+          return cb(data);
+        }, function(err) {
+          return cb(err);
+        }).$promise;
+      }<% } %>
     };
   });

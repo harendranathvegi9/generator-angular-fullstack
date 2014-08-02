@@ -134,3 +134,88 @@ angular.module '<%= scriptAppName %>'
   ###
   getToken: ->
     $cookieStore.get 'token'
+
+<% if(filters.mail) { %>
+  ###
+  Confirm mail
+  @param  {String}   mailConfirmationCode
+  @param  {Function} callback    - optional
+  @return {Promise}
+  ###
+  confirmMail: (mailConfirmationCode, callback) ->
+    cb = callback or angular.noop
+    deferred = $q.defer()
+    $http.post("/api/users/confirm",
+      mailConfirmationCode: mailConfirmationCode
+    ).success((data) ->
+      $cookieStore.put "token", data.token
+      currentUser = User.get()
+      deferred.resolve data
+      cb()
+    ).error ((err) ->
+      deferred.reject err
+      cb err
+    ).bind(this)
+    deferred.promise
+
+  ###
+  Check if a user's mail is confirmed
+
+  @return {Boolean}
+  ###
+  isMailconfirmed: ->
+    currentUser.confirmedMail
+
+  ###
+  Confirm mail
+  @param  {Function} callback    - optional
+  @return {Promise}
+  ###
+  sendConfirmationMail: (callback) ->
+    cb = callback or angular.noop
+    User.sendConfirmationMail((user) ->
+      cb user
+    , (err) ->
+      cb err
+    ).$promise
+
+  ###
+  Send Reset password Mail
+  @param  {String}   email address
+  @param  {Function} callback    - optional
+  @return {Promise}
+  ###
+  sendPwdResetMail: (email, callback) ->
+    cb = callback or angular.noop
+    console.log "email :" + email
+    User.sendPwdResetMail(
+      email: email
+    , (user) ->
+      cb user
+    , (err) ->
+      cb err
+    ).$promise
+
+  ###
+  Change reseted password
+  @param  {String}   pwdresetCode
+  @param  {String}   newPassword
+  @param  {Function} callback    - optional
+  @return {Promise}
+  ###
+  changeResetedPassword: (pwdresetCode, newPassword, callback) ->
+    cb = callback or angular.noop
+    console.log "pwdresetCode: " + pwdresetCode
+    User.changeResetedPassword
+      passwordResetCode: pwdresetCode
+      newPassword: newPassword
+    , (data) ->
+      console.log "data: "
+      console.log data
+      $cookieStore.put "token", data.token
+      currentUser = User.get()
+      cb data
+    , (err) ->
+      cb err
+    .$promise
+<% } %>

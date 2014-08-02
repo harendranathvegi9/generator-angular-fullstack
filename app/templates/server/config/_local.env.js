@@ -7,7 +7,9 @@
 
 module.exports = {
   DOMAIN: 'http://localhost:9000',
-  SESSION_SECRET: "<%= _.slugify(appname) + '-secret' %>",<% if (filters.facebookAuth) { %>
+  SESSION_SECRET: "<%= _.slugify(appname) + '-secret' %>",
+  // Control debug level for modules using visionmedia/debug
+  DEBUG: '', <% if (filters.facebookAuth) { %>
 
   FACEBOOK_ID: 'app-id',
   FACEBOOK_SECRET: 'secret',<% } if (filters.twitterAuth) { %>
@@ -16,8 +18,10 @@ module.exports = {
   TWITTER_SECRET: 'secret',<% } if (filters.googleAuth) { %>
 
   GOOGLE_ID: 'app-id',
-  GOOGLE_SECRET: 'secret',
-<% } %>
-  // Control debug level for modules using visionmedia/debug
-  DEBUG: ''
+  GOOGLE_SECRET: 'secret', <% }  if (filters.mail) { %>
+  MAIL_SERVICE: "", // sets automatically host, port and connection security settings
+  MAIL_USER: "",
+  MAIL_PASS: "",
+  MAIL_FROM_NAME: "Modular Fullstack",
+  MAIL_FROM_ADDRESS: "modular@fullstack.org" <% } %>
 };

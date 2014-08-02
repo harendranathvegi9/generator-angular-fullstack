@@ -1,8 +1,10 @@
 'use strict'
 
 angular.module '<%= scriptAppName %>'
-.controller 'SettingsCtrl', ($scope, User, Auth) ->
+.controller 'SettingsCtrl', ($scope, Auth) ->
   $scope.errors = {}
+  $scope.isMailconfirmed = Auth.isMailconfirmed
+  
   $scope.changePassword = (form) ->
     $scope.submitted = true
 

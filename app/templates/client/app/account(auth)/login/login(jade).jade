@@ -30,12 +30,15 @@ div(ng-include='"components/navbar/navbar.html"')
             | Please enter your email and password.
           p.help-block {{ errors.other }}
 
-        div
-          button.btn.btn-inverse.btn-lg.btn-login(type='submit')
-            | Login
-          = ' '
-          a.btn.btn-default.btn-lg.btn-register(href='/signup')
-            | Register
+        .row
+          .col-sm-6
+            button.btn.btn-inverse.btn-lg.btn-login(type='submit')
+              | Login
+            a.btn.btn-default.btn-lg.btn-register(href='/signup')
+              | Register<% if(filters.mail) { %>
+          .col-sm-6
+            br
+            a(href='/pwdreset') Lost or forgotten your password?<% } %>
 <% if(filters.oauth) {%>
         hr
 
