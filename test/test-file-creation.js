@@ -294,7 +294,7 @@ describe('angular-fullstack generator', function () {
       ]);
     }
 
-    * node-mailer */
+    /* node-mailer */
     if (ops.mail) {
       files = files.concat([
         'server/mail/index.js'
