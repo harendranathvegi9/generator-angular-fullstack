@@ -21,7 +21,8 @@ describe('angular-fullstack generator', function () {
     odms: [ 'mongoose' ],
     auth: true,
     oauth: [],
-    socketio: true
+    socketio: true,
+    mail : true
   }, dependenciesInstalled = false;
 
   function generatorTest(generatorType, name, mockPrompt, callback) {
@@ -293,6 +294,13 @@ describe('angular-fullstack generator', function () {
       ]);
     }
 
+    * node-mailer */
+    if (ops.mail) {
+      files = files.concat([
+        'server/mail/index.js'
+      ]);
+    }
+
     return files;
   }
 
@@ -488,7 +496,8 @@ describe('angular-fullstack generator', function () {
         oauth: ['twitterAuth', 'facebookAuth', 'googleAuth'],
         socketio: true,
         bootstrap: true,
-        uibootstrap: true
+        uibootstrap: true,
+        mail : true
       };
 
       beforeEach(function() {
@@ -560,7 +569,8 @@ describe('angular-fullstack generator', function () {
         oauth: ['twitterAuth', 'facebookAuth', 'googleAuth'],
         socketio: true,
         bootstrap: true,
-        uibootstrap: true
+        uibootstrap: true,
+        mail : true
       };
 
       beforeEach(function() {
@@ -633,7 +643,8 @@ describe('angular-fullstack generator', function () {
         oauth: [],
         socketio: false,
         bootstrap: false,
-        uibootstrap: false
+        uibootstrap: false,
+        mail : false
       };
 
       beforeEach(function(done) {
@@ -706,7 +717,8 @@ describe('angular-fullstack generator', function () {
         oauth: [],
         socketio: false,
         bootstrap: true,
-        uibootstrap: true
+        uibootstrap: true,
+        mail : false
       };
 
       beforeEach(function(done) {
